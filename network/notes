@@ -1,0 +1,19 @@
+rsync -ar -v --rsh=ssh /Users/bmahapatra/Desktop/project4 ubuntu@ec2-13-127-62-102.ap-south-1.compute.amazonaws.com:/home/ubuntu/project4
+
+    {% if accessing_user != user_post.user %}
+        <form action="{% url 'follow' user_post.user %}" method="POST">
+            <input type = "submit">
+        </form>
+        <form action="{% url 'unfollow' user_post.user %}" method="POST">
+            <input type = "submit">
+        </form>
+    {% endif %}
+
+    {% if  exists == True %}
+            <div class = "center-align">Following: <input type="checkbox" id="follow" data-id="{{ user_profile.id }}" data-exists="True"></div>
+        {% else %}
+            <div class = "center-align">Following: <input type="checkbox" id="follow" data-id="{{ user_profile.id }}" data-exists="False"></div>
+        {% endif %}
+
+
+    exists = Followers.objects.get(follower = request.user).exists()

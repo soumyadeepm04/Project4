@@ -1,0 +1,22 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block script %}
+    <script src="{% static 'network/followers.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="center-align">{{ user_profile.user }}</div>
+    <div class="center-align">Followers: {{ user_profile.followers }} Following: {{ user_profile.following }}</div>
+    {% if request.user != user_profile.user %}
+        <div class = "center-align">Following: <input type="checkbox" id="follow" data-id="{{ user_profile.id }}"></div>
+    {% endif %}
+    {% for user_post in user_posts %}
+        <div style="border-style: solid;">
+            <div>{{ user_post.user }}</div>
+            <div>{{ user_post.content }}</div>
+            <div>{{ user_post.timestamp }}</div>
+            <div>Likes: {{ user_post.likes }}</div>
+        </div>
+    {% endfor %}
+{% endblock %}

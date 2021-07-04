@@ -1,0 +1,12 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    {% for post in posts %}
+        <div style="border-style: solid;">
+            <div><a href = "{% url 'profile' post.id %}">{{ post.user }}</a></div>
+            <div>{{ post.content }}</div>
+            <div>{{ post.timestamp }}</div>
+            <div>Likes: {{ post.likes }}</div>
+        </div>
+    {% endfor %}
+{% endblock %}
