@@ -82,8 +82,9 @@ def all_posts(request):
     })
 
 def profile(request, user_id):
-    user_profile = Profile.objects.get(user = user_id)
-    user_posts = Posts.objects.filter(user = user_id).order_by("-timestamp")
+    x = Posts.objects.get(pk = user_id).user
+    user_profile = Profile.objects.get(user = x)
+    user_posts = Posts.objects.filter(user = x).order_by("-timestamp")
     exists = Followers.objects.filter(follower = request.user, user = user_id).exists()
     return render(request, "network/profiles.html", {
         "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists
