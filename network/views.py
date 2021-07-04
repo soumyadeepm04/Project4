@@ -5,9 +5,20 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
+from django.views.generic import ListView
 
 from .models import Followers, Following, Posts, Profile, User
 
+class PostsList(ListView):
+    paginate_by = 2
+    model = Posts
+
+def Pagination(request, post_list):
+    paginator = Paginator(post_list, 1)
+    page_number = request.GET.get("page")
+    posts_page = paginator.get_page(page_number)
+    return posts_page
 
 def index(request):
     return render(request, "network/index.html")
@@ -69,25 +80,33 @@ def register(request):
 def create_posts(request):
     if request.method == "POST":
         Posts.objects.create(user = request.user, content = request.POST["posts"], likes = 0)
-        return render(request, "network/all_posts.html", {
-            "posts":Posts.objects.order_by("-timestamp").all()
-        })
+        return HttpResponseRedirect(reverse("all_posts"))
     
     return render(request, "network/create_posts.html")
 
 @login_required(login_url='login')
 def all_posts(request):
+    posts_page = Pagination(request, Posts.objects.order_by("-timestamp").all())
     return render(request, "network/all_posts.html", {
-        "posts":Posts.objects.order_by("-timestamp").all()
+        "posts":posts_page
     })
 
+@login_required(login_url='login')
 def profile(request, user_id):
     x = Posts.objects.get(pk = user_id).user
     user_profile = Profile.objects.get(user = x)
-    user_posts = Posts.objects.filter(user = x).order_by("-timestamp")
-    exists = Followers.objects.filter(follower = request.user, user = user_id).exists()
+    exists = Followers.objects.filter(follower = request.user, user = x).exists()
+    user_posts = Pagination(request, Posts.objects.filter(user = x).order_by("-timestamp"))
     return render(request, "network/profiles.html", {
         "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists
+    })
+
+@login_required(login_url='login')
+def user_profile(request, user_id):
+    user_profile = Profile.objects.get(user = user_id)
+    user_posts = Pagination(request, Posts.objects.filter(user = user_id).order_by("-timestamp"))
+    return render(request, "network/profiles.html", {
+        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user
     })
 
 @csrf_exempt
@@ -125,7 +144,8 @@ def following(request):
     posts = []
     for following_user in following_users:
         posts.extend(Posts.objects.filter(user = following_user))
-    posts.sort(key=lambda x:Posts(x).timestamp, reverse=True)
+    posts.sort(key=lambda x:x.timestamp, reverse=True)
+    posts_page = Pagination(request, posts)
     return render(request, "network/all_posts.html", {
-        "posts":posts
+        "posts":posts_page
     })
