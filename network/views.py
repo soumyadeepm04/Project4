@@ -70,7 +70,7 @@ def create_posts(request):
     if request.method == "POST":
         Posts.objects.create(user = request.user, content = request.POST["posts"], likes = 0)
         return render(request, "network/all_posts.html", {
-            "posts":Posts.objects.all()
+            "posts":Posts.objects.order_by("-timestamp").all()
         })
     
     return render(request, "network/create_posts.html")
@@ -78,14 +78,15 @@ def create_posts(request):
 @login_required(login_url='login')
 def all_posts(request):
     return render(request, "network/all_posts.html", {
-        "posts":Posts.objects.all()
+        "posts":Posts.objects.order_by("-timestamp").all()
     })
 
 def profile(request, user_id):
     user_profile = Profile.objects.get(user = user_id)
-    user_posts = Posts.objects.filter(user = user_id).reverse()
+    user_posts = Posts.objects.filter(user = user_id).order_by("-timestamp")
+    exists = Followers.objects.filter(follower = request.user, user = user_id).exists()
     return render(request, "network/profiles.html", {
-        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user
+        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists
     })
 
 @csrf_exempt
@@ -102,4 +103,14 @@ def follow(request, id):
         Following.objects.create(user = accessor.user, following = profile.user)
         return HttpResponse(status = 204)
 
-
+@csrf_exempt
+@login_required(login_url='login')
+def unfollow(request, id):
+        profile = Profile.objects.get(user = id)
+        profile.followers = profile.followers - 1
+        profile.save()
+        accessor = Profile.objects.get(user = request.user)
+        accessor.following = accessor.following - 1
+        accessor.save()
+        Followers.objects.get(user = profile.user, follower = accessor.user).delete()
+        Following.objects.get(user = accessor.user, following = profile.user).delete()

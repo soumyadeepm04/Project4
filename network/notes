@@ -17,3 +17,16 @@ rsync -ar -v --rsh=ssh /Users/bmahapatra/Desktop/project4 ubuntu@ec2-13-127-62-1
 
 
     exists = Followers.objects.get(follower = request.user).exists()
+
+@login_required(login_url='login')
+def following(request):
+    following_users_objects = Following.objects.filter(user = request.user)
+    following_users = []
+    for following_users_object in following_users_objects:
+        following_users.append(following_users_object.following)
+    posts = []
+    for following_user in following_users:
+        posts.append(Posts.objects.filter(user = following_user))
+    return render(request, "network/all_posts.html", {
+        "posts":posts
+    })

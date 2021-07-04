@@ -9,7 +9,11 @@
     <div class="center-align">{{ user_profile.user }}</div>
     <div class="center-align">Followers: {{ user_profile.followers }} Following: {{ user_profile.following }}</div>
     {% if request.user != user_profile.user %}
-        <div class = "center-align">Following: <input type="checkbox" id="follow" data-id="{{ user_profile.id }}"></div>
+        {% if  exists == True %}
+            <div class = "center-align">Following: <input type="checkbox" id="follow" data-id="{{ user_profile.id }}" data-exists="True"></div>
+        {% else %}
+            <div class = "center-align">Following: <input type="checkbox" id="follow" data-id="{{ user_profile.id }}" data-exists="False"></div>
+        {% endif %}
     {% endif %}
     {% for user_post in user_posts %}
         <div style="border-style: solid;">
