@@ -114,3 +114,17 @@ def unfollow(request, id):
         accessor.save()
         Followers.objects.get(user = profile.user, follower = accessor.user).delete()
         Following.objects.get(user = accessor.user, following = profile.user).delete()
+
+@login_required(login_url='login')
+def following(request):
+    following_users_objects = Following.objects.filter(user = request.user)
+    following_users = []
+    for following_users_object in following_users_objects:
+        following_users.append(following_users_object.following)
+    posts = []
+    for following_user in following_users:
+        posts.extend(Posts.objects.filter(user = following_user))
+    posts.sort(key=lambda x:Posts(x).timestamp, reverse=True)
+    return render(request, "network/all_posts.html", {
+        "posts":posts
+    })
