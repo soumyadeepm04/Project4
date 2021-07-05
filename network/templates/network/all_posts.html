@@ -7,6 +7,9 @@
             <div>{{ post.content }}</div>
             <div>{{ post.timestamp }}</div>
             <div>Likes: {{ post.likes }}</div>
+            {% if request.user == post.user %}
+                <div><a href = "{% url 'edit_page' post.id %}">Edit</a></div>
+            {% endif %}
         </div>
     {% endfor %}
     <div class="pagination">

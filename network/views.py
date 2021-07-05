@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -15,7 +16,7 @@ class PostsList(ListView):
     model = Posts
 
 def Pagination(request, post_list):
-    paginator = Paginator(post_list, 1)
+    paginator = Paginator(post_list, 2)
     page_number = request.GET.get("page")
     posts_page = paginator.get_page(page_number)
     return posts_page
@@ -149,3 +150,20 @@ def following(request):
     return render(request, "network/all_posts.html", {
         "posts":posts_page
     })
+
+@login_required(login_url='login')
+def edit_page(request, post_id):
+    post_content = Posts.objects.get(pk=post_id).content
+    return render(request, "network/edit_page.html", {
+        "post_content":post_content, "post_id":post_id
+    })
+
+@csrf_exempt
+@login_required(login_url='login')
+def edit_post(request, post_id):
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        edited_post = Posts.objects.get(pk=post_id)
+        edited_post.content = data["content"]
+        edited_post.save()
+    return HttpResponse(status = 204)

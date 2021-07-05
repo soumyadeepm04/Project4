@@ -6,3 +6,8 @@ textarea{
 .center-align{
     text-align: center;
 }
+
+#change_content{
+    min-height: 100px;
+    min-width: 100px;
+}
