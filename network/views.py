@@ -156,6 +156,7 @@ def unfollow(request, id):
         accessor.save()
         Followers.objects.get(user = profile.user, follower = accessor.user).delete()
         Following.objects.get(user = accessor.user, following = profile.user).delete()
+        return HttpResponse(status = 204)
 
 @login_required(login_url='login')
 def following(request):
