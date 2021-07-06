@@ -11,11 +11,11 @@
             <div><a href = "{% url 'profile' post.id %}">{{ post.user }}</a></div>
             <div>{{ post.content }}</div>
             <div>{{ post.timestamp }}</div>
-            <div>Likes: {{ post.likes }}</div>
+            <div id = "{{ post.id }}">Likes: {{ post.likes }}</div>
             {% if post in liked_posts %}
-                Like: <input type = "checkbox" class = "like" data-liked = "yes" data-id="{{ post.id }}" data-request_user="{{ request.user }}">
+                Like: <input type = "checkbox" class = "like" data-liked = "yes" data-id="{{ post.id }}" data-likes="{{ post.likes }}">
             {% else %}
-                Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ post.id }}" data-request_user="{{ request.user }}">
+                Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ post.id }}" data-likes="{{ post.likes }}">
             {% endif %}
             {% if request.user == post.user %}
                 <div><a href = "{% url 'edit_page' post.id %}">Edit</a></div>
