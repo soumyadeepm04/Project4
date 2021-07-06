@@ -1,4 +1,9 @@
 {% extends "network/layout.html" %}
+{% load static %}
+
+{% block script %}
+    <script src="{% static 'network/like.js' %}"></script>
+{% endblock %}
 
 {% block body %}
     {% for post in posts %}
@@ -7,6 +12,11 @@
             <div>{{ post.content }}</div>
             <div>{{ post.timestamp }}</div>
             <div>Likes: {{ post.likes }}</div>
+            {% if post in liked_posts %}
+                Like: <input type = "checkbox" class = "like" data-liked = "yes" data-id="{{ post.id }}" data-request_user="{{ request.user }}">
+            {% else %}
+                Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ post.id }}" data-request_user="{{ request.user }}">
+            {% endif %}
             {% if request.user == post.user %}
                 <div><a href = "{% url 'edit_page' post.id %}">Edit</a></div>
             {% endif %}

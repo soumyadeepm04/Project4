@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.views.generic import ListView
 
-from .models import Followers, Following, Posts, Profile, User
+from .models import Followers, Following, Likes, Posts, Profile, User
 
 class PostsList(ListView):
     paginate_by = 2
@@ -88,8 +88,15 @@ def create_posts(request):
 @login_required(login_url='login')
 def all_posts(request):
     posts_page = Pagination(request, Posts.objects.order_by("-timestamp").all())
+    liked_records = Likes.objects.filter(user_who_liked = request.user)
+    post_ids = []
+    for liked_record in liked_records:
+        post_ids.append(liked_record.post_id)
+    liked_posts = []
+    for post_id in post_ids:
+        liked_posts.extend(Posts.objects.filter(pk = post_id))
     return render(request, "network/all_posts.html", {
-        "posts":posts_page
+        "posts":posts_page, "liked_posts":liked_posts, "request.user":request.user
     })
 
 @login_required(login_url='login')
@@ -166,4 +173,30 @@ def edit_post(request, post_id):
         edited_post = Posts.objects.get(pk=post_id)
         edited_post.content = data["content"]
         edited_post.save()
+    return HttpResponse(status = 204)
+
+@csrf_exempt
+@login_required(login_url='login')
+def like(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        post_id = data["post_id"]
+        user_who_liked = request.user
+        Likes.objects.create(post_id = post_id, user_who_liked = user_who_liked)
+        post_to_like = Posts.objects.get(pk = post_id)
+        post_to_like.likes = post_to_like.likes + 1
+        post_to_like.save()
+    return HttpResponse(status = 204)
+
+@csrf_exempt
+@login_required(login_url='login')
+def unlike(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        post_id = data["post_id"]
+        user_who_liked = request.user
+        Likes.objects.get(post_id = post_id, user_who_liked = user_who_liked).delete()
+        post_to_unlike = Posts.objects.get(pk = post_id)
+        post_to_unlike.likes = post_to_unlike.likes - 1
+        post_to_unlike.save()
     return HttpResponse(status = 204)
