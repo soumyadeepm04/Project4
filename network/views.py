@@ -21,6 +21,16 @@ def Pagination(request, post_list):
     posts_page = paginator.get_page(page_number)
     return posts_page
 
+def Check(request):
+    liked_records = Likes.objects.filter(user_who_liked = request.user)
+    post_ids = []
+    for liked_record in liked_records:
+        post_ids.append(liked_record.post_id)
+    liked_posts = []
+    for post_id in post_ids:
+        liked_posts.extend(Posts.objects.filter(pk = post_id))
+    return liked_posts
+
 def index(request):
     return render(request, "network/index.html")
 
@@ -88,13 +98,7 @@ def create_posts(request):
 @login_required(login_url='login')
 def all_posts(request):
     posts_page = Pagination(request, Posts.objects.order_by("-timestamp").all())
-    liked_records = Likes.objects.filter(user_who_liked = request.user)
-    post_ids = []
-    for liked_record in liked_records:
-        post_ids.append(liked_record.post_id)
-    liked_posts = []
-    for post_id in post_ids:
-        liked_posts.extend(Posts.objects.filter(pk = post_id))
+    liked_posts = Check(request)
     return render(request, "network/all_posts.html", {
         "posts":posts_page, "liked_posts":liked_posts
     })
@@ -105,13 +109,7 @@ def profile(request, user_id):
     user_profile = Profile.objects.get(user = x)
     exists = Followers.objects.filter(follower = request.user, user = x).exists()
     user_posts = Pagination(request, Posts.objects.filter(user = x).order_by("-timestamp"))
-    liked_records = Likes.objects.filter(user_who_liked = request.user)
-    post_ids = []
-    for liked_record in liked_records:
-        post_ids.append(liked_record.post_id)
-    liked_posts = []
-    for post_id in post_ids:
-        liked_posts.extend(Posts.objects.filter(pk = post_id))
+    liked_posts = Check(request)
     return render(request, "network/profiles.html", {
         "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists, "liked_posts":liked_posts
     })
@@ -120,13 +118,7 @@ def profile(request, user_id):
 def user_profile(request, user_id):
     user_profile = Profile.objects.get(user = user_id)
     user_posts = Pagination(request, Posts.objects.filter(user = user_id).order_by("-timestamp"))
-    liked_records = Likes.objects.filter(user_who_liked = request.user)
-    post_ids = []
-    for liked_record in liked_records:
-        post_ids.append(liked_record.post_id)
-    liked_posts = []
-    for post_id in post_ids:
-        liked_posts.extend(Posts.objects.filter(pk = post_id))
+    liked_posts = Check(request)
     return render(request, "network/profiles.html", {
         "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "liked_posts":liked_posts
     })
