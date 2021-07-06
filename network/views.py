@@ -96,7 +96,7 @@ def all_posts(request):
     for post_id in post_ids:
         liked_posts.extend(Posts.objects.filter(pk = post_id))
     return render(request, "network/all_posts.html", {
-        "posts":posts_page, "liked_posts":liked_posts, "request.user":request.user
+        "posts":posts_page, "liked_posts":liked_posts
     })
 
 @login_required(login_url='login')
@@ -105,16 +105,30 @@ def profile(request, user_id):
     user_profile = Profile.objects.get(user = x)
     exists = Followers.objects.filter(follower = request.user, user = x).exists()
     user_posts = Pagination(request, Posts.objects.filter(user = x).order_by("-timestamp"))
+    liked_records = Likes.objects.filter(user_who_liked = request.user)
+    post_ids = []
+    for liked_record in liked_records:
+        post_ids.append(liked_record.post_id)
+    liked_posts = []
+    for post_id in post_ids:
+        liked_posts.extend(Posts.objects.filter(pk = post_id))
     return render(request, "network/profiles.html", {
-        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists
+        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists, "liked_posts":liked_posts
     })
 
 @login_required(login_url='login')
 def user_profile(request, user_id):
     user_profile = Profile.objects.get(user = user_id)
     user_posts = Pagination(request, Posts.objects.filter(user = user_id).order_by("-timestamp"))
+    liked_records = Likes.objects.filter(user_who_liked = request.user)
+    post_ids = []
+    for liked_record in liked_records:
+        post_ids.append(liked_record.post_id)
+    liked_posts = []
+    for post_id in post_ids:
+        liked_posts.extend(Posts.objects.filter(pk = post_id))
     return render(request, "network/profiles.html", {
-        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user
+        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "liked_posts":liked_posts
     })
 
 @csrf_exempt
