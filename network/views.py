@@ -16,7 +16,7 @@ class PostsList(ListView):
     model = Posts
 
 def Pagination(request, post_list):
-    paginator = Paginator(post_list, 2)
+    paginator = Paginator(post_list, 10)
     page_number = request.GET.get("page")
     posts_page = paginator.get_page(page_number)
     return posts_page
