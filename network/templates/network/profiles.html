@@ -17,38 +17,42 @@
             <div class = "center-align">Following: <input type="checkbox" id="follow" data-id="{{ user_profile.id }}" data-exists="False" data-followers="{{ user_profile.followers }}" data-following="{{ user_profile.following }}"></div>
         {% endif %}
     {% endif %}
-    {% for user_post in user_posts %}
-        <div style="border-style: solid;">
-            <div>{{ user_post.user }}</div>
-            <div data-required_to_edit="{{ user_post.content }}">{{ user_post.content }}</div>
-            <div data-a_id = "{{ user_post.id }}" style="display: none;"><textarea></textarea><button>Submit</button></div>
-            <div>{{ user_post.timestamp }}</div>
-            <div id = "{{ user_post.id }}">Likes: {{ user_post.likes }}</div>
-            {% if user_post in liked_posts %}
-                Like: <input type = "checkbox" class = "like" data-liked = "yes" data-id="{{ user_post.id }}" data-likes="{{ user_post.likes }}">
-            {% else %}
-                Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ user_post.id }}" data-likes="{{ user_post.likes }}">
-            {% endif %}
-            {% if request.user == user_post.user %}
-                <div><a href="#" role="button" class = "edit" data-content="{{ user_post.content }}" data-id="{{ user_post.id }}">Edit</a></div>
-            {% endif %}
-        </div>
-    {% endfor %}
-    <div class="pagination">
-        <span class="step-links">
-            {% if user_posts.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ user_posts.previous_page_number }}">previous</a>
-            {% endif %}
-    
-            <span class="current">
-                Page {{ user_posts.number }} of {{ user_posts.paginator.num_pages }}.
+    {% if len == 0 %}
+        No posts for this user yet
+    {% else %}
+        {% for user_post in user_posts %}
+            <div style="border-style: solid;">
+                <div>{{ user_post.user }}</div>
+                <div data-required_to_edit="{{ user_post.content }}">{{ user_post.content }}</div>
+                <div data-a_id = "{{ user_post.id }}" style="display: none;"><textarea></textarea><button>Submit</button></div>
+                <div>{{ user_post.timestamp }}</div>
+                <div id = "{{ user_post.id }}">Likes: {{ user_post.likes }}</div>
+                {% if user_post in liked_posts %}
+                    Like: <input type = "checkbox" class = "like" data-liked = "yes" data-id="{{ user_post.id }}" data-likes="{{ user_post.likes }}">
+                {% else %}
+                    Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ user_post.id }}" data-likes="{{ user_post.likes }}">
+                {% endif %}
+                {% if request.user == user_post.user %}
+                    <div><a href="#" role="button" class = "edit" data-content="{{ user_post.content }}" data-id="{{ user_post.id }}">Edit</a></div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if user_posts.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ user_posts.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ user_posts.number }} of {{ user_posts.paginator.num_pages }}.
+                </span>
+        
+                {% if user_posts.has_next %}
+                    <a href="?page={{ user_posts.next_page_number }}">next</a>
+                    <a href="?page={{ user_posts.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
             </span>
-    
-            {% if user_posts.has_next %}
-                <a href="?page={{ user_posts.next_page_number }}">next</a>
-                <a href="?page={{ user_posts.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
-    </div>
+        </div>
+    {% endif %}
 {% endblock %}

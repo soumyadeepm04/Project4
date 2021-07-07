@@ -99,8 +99,12 @@ def create_posts(request):
 def all_posts(request):
     posts_page = Pagination(request, Posts.objects.order_by("-timestamp").all())
     liked_posts = Check(request)
+    if not posts_page:
+        len = 0
+    else:
+        len = 1
     return render(request, "network/all_posts.html", {
-        "posts":posts_page, "liked_posts":liked_posts
+        "posts":posts_page, "liked_posts":liked_posts, "len":len
     })
 
 @login_required(login_url='login')
@@ -110,8 +114,12 @@ def profile(request, user_id):
     exists = Followers.objects.filter(follower = request.user, user = x).exists()
     user_posts = Pagination(request, Posts.objects.filter(user = x).order_by("-timestamp"))
     liked_posts = Check(request)
+    if not user_posts:
+        len = 0
+    else:
+        len = 1
     return render(request, "network/profiles.html", {
-        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists, "liked_posts":liked_posts
+        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "exists":exists, "liked_posts":liked_posts, "len":len
     })
 
 @login_required(login_url='login')
@@ -119,8 +127,12 @@ def user_profile(request, user_id):
     user_profile = Profile.objects.get(user = user_id)
     user_posts = Pagination(request, Posts.objects.filter(user = user_id).order_by("-timestamp"))
     liked_posts = Check(request)
+    if not user_posts:
+        len = 0
+    else:
+        len = 1
     return render(request, "network/profiles.html", {
-        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "liked_posts":liked_posts
+        "user_profile":user_profile, "user_posts":user_posts, "accessing_user":request.user, "liked_posts":liked_posts, "len":len
     })
 
 @csrf_exempt
@@ -161,8 +173,12 @@ def following(request):
         posts.extend(Posts.objects.filter(user = following_user))
     posts.sort(key=lambda x:x.timestamp, reverse=True)
     posts_page = Pagination(request, posts)
+    if not posts_page:
+        len = 0
+    else:
+        len = 1
     return render(request, "network/all_posts.html", {
-        "posts":posts_page
+        "posts":posts_page, "len":len
     })
 
 @csrf_exempt
