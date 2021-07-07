@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block body %}
+    <h5><div id="heading">ALL POSTS</div></h5>
     {% for post in posts %}
         <div style="border-style: solid;">
             <div><a href = "{% url 'profile' post.id %}">{{ post.user }}</a></div>
