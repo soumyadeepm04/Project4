@@ -20,7 +20,7 @@
                 Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ post.id }}" data-likes="{{ post.likes }}">
             {% endif %}
             {% if request.user == post.user %}
-                <div><a style="color: #0645AD;" class = "edit" data-content="{{ post.content }}" data-id="{{ post.id }}">Edit</a></div>
+                <div><a href="#" role="button" class = "edit" data-content="{{ post.content }}" data-id="{{ post.id }}">Edit</a></div>
             {% endif %}
         </div>
     {% endfor %}
