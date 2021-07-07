@@ -4,6 +4,7 @@
 {% block script %}
     <script src="{% static 'network/followers.js' %}"></script>
     <script src="{% static 'network/like.js' %}"></script>
+    <script src="{% static 'network/edit.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -19,7 +20,8 @@
     {% for user_post in user_posts %}
         <div style="border-style: solid;">
             <div>{{ user_post.user }}</div>
-            <div>{{ user_post.content }}</div>
+            <div data-required_to_edit="{{ user_post.content }}">{{ user_post.content }}</div>
+            <div id = "{{ user_post.timestamp }}" style="display: none;"><textarea></textarea><button>Submit</button></div>
             <div>{{ user_post.timestamp }}</div>
             <div id = "{{ user_post.id }}">Likes: {{ user_post.likes }}</div>
             {% if user_post in liked_posts %}
@@ -28,7 +30,7 @@
                 Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ user_post.id }}" data-likes="{{ user_post.likes }}">
             {% endif %}
             {% if request.user == user_post.user %}
-                <div><a href = "{% url 'edit_page' user_post.id %}">Edit</a></div>
+                <div><a class = "edit" data-timestamp="{{ user_post.timestamp }}" data-content="{{ user_post.content }}" data-id="{{ user_post.id }}">Edit</a></div>
             {% endif %}
         </div>
     {% endfor %}
