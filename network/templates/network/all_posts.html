@@ -11,7 +11,7 @@
         <div style="border-style: solid;">
             <div><a href = "{% url 'profile' post.id %}">{{ post.user }}</a></div>
             <div data-required_to_edit="{{ post.content }}">{{ post.content }}</div>
-            <div id = "{{ post.timestamp }}" style="display: none;"><textarea></textarea><button>Submit</button></div>
+            <div data-a_id = "{{ post.id }}" style="display: none;"><textarea></textarea><button>Submit</button></div>
             <div>{{ post.timestamp }}</div>
             <div id = "{{ post.id }}">Likes: {{ post.likes }}</div>
             {% if post in liked_posts %}
@@ -20,7 +20,7 @@
                 Like: <input type = "checkbox" class = "like" data-liked = "no" data-id="{{ post.id }}" data-likes="{{ post.likes }}">
             {% endif %}
             {% if request.user == post.user %}
-                <div><a class = "edit" data-timestamp="{{ post.timestamp }}" data-content="{{ post.content }}" data-id="{{ post.id }}">Edit</a></div>
+                <div><a class = "edit" data-content="{{ post.content }}" data-id="{{ post.id }}">Edit</a></div>
             {% endif %}
         </div>
     {% endfor %}

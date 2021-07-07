@@ -5,7 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.edit').forEach(element => {
             if (event.target === element){
                 y = element;
-                x = document.getElementById(`${element.dataset.timestamp}`);
+                document.querySelectorAll('div').forEach(div => {
+                    if (div.getAttribute('data-a_id') === element.dataset.id){
+                        x = div;
+                    }
+                })
                 x.style.display = 'block';
                 x.children[0].value = element.dataset.content;
             }

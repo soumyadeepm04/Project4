@@ -165,13 +165,6 @@ def following(request):
         "posts":posts_page
     })
 
-@login_required(login_url='login')
-def edit_page(request, post_id):
-    post_content = Posts.objects.get(pk=post_id).content
-    return render(request, "network/edit_page.html", {
-        "post_content":post_content, "post_id":post_id
-    })
-
 @csrf_exempt
 @login_required(login_url='login')
 def edit_post(request, post_id):
